@@ -37,6 +37,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 
+
 const App = () => {
   const [users, setUsers] = useState([
   { id: 1, name: "Ali", age: 20, status: true, img: "https://i.pravatar.cc/100?img=1" },
