@@ -14,6 +14,7 @@
     "@emotion/styled": "^11.14.1",
     "@fontsource-variable/inter": "^5.2.8",
     "@mui/material": "^9.0.0",
+    "@reduxjs/toolkit": "^2.11.2",
     "@tailwindcss/cli": "^4.2.2",
     "@tailwindcss/vite": "^4.2.2",
     "axios": "^1.15.0",
