@@ -47,12 +47,23 @@ export const Todoslice = createSlice({
                 }
                 return e
             })
+        },
+        chek:(state,action)=>{
+            state.data=state.data.map((e)=>{
+                if(e.id==action.payload){
+                    return {
+                        ...e,
+                        status:!e.status
+                    }
+                }
+                return e
+            })
         }
 
     },
 })
 
 // Action creators are generated for each case reducer function
-export const { deleteuser, adduser, edituser } = Todoslice.actions
+export const { deleteuser, adduser, edituser,chek } = Todoslice.actions
 
 export default Todoslice.reducer
