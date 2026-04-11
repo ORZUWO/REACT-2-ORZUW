@@ -4,7 +4,7 @@ import { type RootState } from './store/store'
 import { adduser, chek, deleteuser, edituser } from './store/counterSlice'
 import { useFormik } from 'formik'
 
-import { Button } from "@/components/ui/button"
+import { Button } from "./components/ui/button"
 import {
   Dialog,
   DialogClose,
@@ -13,10 +13,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Field, FieldGroup } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+} from "./components/ui/dialog"
+import { Field, FieldGroup } from "./components/ui/field"
+import { Input } from "./components/ui/input"
+import { Label } from "./components/ui/label"
 
 const App = () => {
   const { data } = useSelector((store: RootState) => store.todo)
