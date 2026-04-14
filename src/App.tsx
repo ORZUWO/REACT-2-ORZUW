@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { type RootState } from './store/store'
-import { adduser, deleteuser, edituser } from './store/counterSlice'
 import { useFormik } from 'formik'
+import { adduser, che, deleteuser, edituser, getdata, img } from './store/counterSlice'
 
 const App = () => {
-  const { data } = useSelector((store: RootState) => store.todo)
+  const { data, error, isloading } = useSelector((store: RootState) => store.todo)
   const Dispatch = useDispatch()
 
   const [idx, setidx] = useState<number | null>(null)
@@ -13,18 +13,33 @@ const App = () => {
   const [openInfo, setopenInfo] = useState(false)
   const [info, setinfo] = useState<any>(null)
 
-  const { handleChange, handleSubmit, values, setValues, resetForm } = useFormik({
+  const { handleChange, handleSubmit, values, setValues, resetForm, setFieldValue } = useFormik({
     initialValues: {
-      name: "",
-      age: 0,
-      status: true,
-      id: Date.now()
+      name: '',
+      description: '',
+      isCompleted: true,
+      images: null as File | null
     },
-    onSubmit: values => {
+    onSubmit: (values) => {
+      let formdata = new FormData()
+      formdata.append("name", values.name)
+      formdata.append("description", values.description)
+      formdata.append("isCompleted", String(values.isCompleted))
+
+      if (values.images) {
+        formdata.append("images", values.images)
+      }
+
       if (idx == null) {
-        Dispatch(adduser({ ...values, id: Date.now() }))
+        Dispatch(adduser(formdata) as any)
       } else {
-        Dispatch(edituser(values))
+        Dispatch(
+          edituser({
+            id: idx,
+            name: values.name,
+            description: values.description,
+          }) as any
+        )
       }
 
       resetForm()
@@ -33,136 +48,193 @@ const App = () => {
     },
   })
 
+  useEffect(() => {
+    Dispatch(getdata() as any)
+  }, [])
+
+  if (isloading) {
+    return <div className="text-center text-2xl mt-10">...Loading</div>
+  }
+
+  if (error) {
+    return <div className="text-center text-2xl mt-10 text-red-600">...Error</div>
+  }
+
   return (
-    <>
-      <div className="w-[1100px] m-auto mt-[30px] bg-white border border-gray-300 rounded-[18px] p-[25px] shadow-sm">
-        <div className="flex justify-between items-center mb-[25px]">
-          <h1 className="text-[28px] font-bold text-gray-800">
-            User Table
-          </h1>
+    <div className="min-h-screen bg-slate-100 p-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-bold text-slate-800">Todo Table</h1>
 
           <button
+            type="button"
             onClick={() => {
-              setopen(true)
               setidx(null)
               resetForm()
+              setValues({
+                name: '',
+                description: '',
+                isCompleted: true,
+                images: null,
+              })
+              setopen(true)
             }}
-            className="bg-slate-700 text-white px-[20px] py-[10px] rounded-[10px]"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl shadow"
           >
-            Add User
+            + Add User
           </button>
         </div>
 
-        <table className="w-full border border-collapse overflow-hidden">
-          <thead className="bg-slate-700 text-white">
-            <tr>
-              <th className="border p-[12px] w-[100px]">Checkbox</th>
-              <th className="border p-[12px]">ID</th>
-              <th className="border p-[12px]">Name</th>
-              <th className="border p-[12px]">Age</th>
-              <th className="border p-[12px]">Status</th>
-              <th className="border p-[12px] w-[320px]">Action</th>
-            </tr>
-          </thead>
+        <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-slate-900 text-white">
+                <tr>
+                  <th className="p-4 text-left">Checkbox</th>
+                  <th className="p-4 text-left">ID</th>
+                  <th className="p-4 text-left">Name</th>
+                  <th className="p-4 text-left">Description</th>
+                  <th className="p-4 text-left">Status</th>
+                  <th className="p-4 text-left">Action</th>
+                </tr>
+              </thead>
 
-          <tbody>
-            {data.map((e) => (
-              <tr key={e.id} className="hover:bg-gray-50">
-                <td className="border p-[12px] text-center">
-                  <input type="checkbox" checked={e.status} readOnly />
-                </td>
+              <tbody>
+                {data.map((e) => {
+                  return (
+                    <tr key={e.id} className="border-b hover:bg-slate-50 transition">
+                      <td className="p-4">
+                        <input
+                          onChange={() => Dispatch(che(e) as any)}
+                          checked={e.isCompleted}
+                          type="checkbox"
+                          className="w-4 h-4"
+                        />
+                      </td>
 
-                <td className="border p-[12px] text-center">{e.id}</td>
-                <td className="border p-[12px] text-center">{e.name}</td>
-                <td className="border p-[12px] text-center">{e.age}</td>
+                      <td className="p-4 font-semibold text-slate-700">{e.id}</td>
 
-                <td className="border p-[12px] text-center">
-                  <span
-                    className={
-                      e.status
-                        ? "bg-green-100 text-green-700 px-[12px] py-[5px] rounded-[8px]"
-                        : "bg-red-100 text-red-700 px-[12px] py-[5px] rounded-[8px]"
-                    }
-                  >
-                    {e.status ? "Active" : "Inactive"}
-                  </span>
-                </td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-3">
+                          {e.images.map((el) => {
+                            return (
+                              <img
+                                key={el.id}
+                                className="w-[38px] h-[38px] rounded-full object-cover border"
+                                src={`${img}/${el.imageName}`}
+                                alt=""
+                              />
+                            )
+                          })}
+                          <p className="font-medium text-slate-800">{e.name}</p>
+                        </div>
+                      </td>
 
-                <td className="border p-[12px] text-center">
-                  <div className="flex justify-center gap-[10px]">
-                    <button
-                      onClick={() => {
-                        setidx(e.id)
-                        setValues(e)
-                        setopen(true)
-                      }}
-                      className="bg-blue-500 text-white px-[14px] py-[7px] rounded-[8px]"
-                    >
-                      Edit
-                    </button>
+                      <td className="p-4 text-slate-600">{e.description}</td>
 
-                    <button
-                      onClick={() => {
-                        setinfo(e)
-                        setopenInfo(true)
-                      }}
-                      className="bg-green-500 text-white px-[14px] py-[7px] rounded-[8px]"
-                    >
-                      Info
-                    </button>
+                      <td className="p-4">
+                        <span
+                          className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                            e.isCompleted
+                              ? 'bg-green-100 text-green-700'
+                              : 'bg-red-100 text-red-700'
+                          }`}
+                        >
+                          {e.isCompleted ? 'ACTIVE' : 'INACTIVE'}
+                        </span>
+                      </td>
 
-                    <button
-                      onClick={() => Dispatch(deleteuser(e.id))}
-                      className="bg-red-500 text-white px-[14px] py-[7px] rounded-[8px]"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                      <td className="p-4">
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => Dispatch(deleteuser(e.id) as any)}
+                            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl"
+                          >
+                            Delete
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setidx(e.id)
+                              setValues({
+                                name: e.name,
+                                description: e.description,
+                                isCompleted: e.isCompleted,
+                                images: null,
+                              })
+                              setopen(true)
+                            }}
+                            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl"
+                          >
+                            Edit
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setinfo(e)
+                              setopenInfo(true)
+                            }}
+                            className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-xl"
+                          >
+                            Info
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       {open && (
-        <div className="fixed inset-0 bg-black/40 flex justify-center items-center">
-          <div className="w-[400px] bg-white rounded-[16px] p-[20px]">
-            <h2 className="text-[26px] font-bold mb-[20px]">
-              {idx == null ? "Add User" : "Edit User"}
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl p-6 relative">
+            <h2 className="text-2xl font-bold mb-5 text-slate-800">
+              {idx == null ? 'Add User' : 'Edit User'}
             </h2>
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-[15px]">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <input
-                className="border border-gray-300 p-[11px] rounded-[10px] outline-none"
-                type="text"
-                name="name"
+                className="border border-slate-300 focus:border-blue-500 outline-none py-4 rounded-2xl px-4"
                 value={values.name}
+                type="text"
                 onChange={handleChange}
+                name="name"
                 placeholder="Name..."
               />
 
               <input
-                className="border border-gray-300 p-[11px] rounded-[10px] outline-none"
-                type="number"
-                name="age"
-                value={values.age}
+                className="border border-slate-300 focus:border-blue-500 outline-none py-4 rounded-2xl px-4"
+                value={values.description}
+                type="text"
+                name="description"
                 onChange={handleChange}
-                placeholder="Age..."
+                placeholder="Description..."
               />
 
-              <label className="flex items-center gap-[10px]">
+              {idx == null && (
                 <input
-                  type="checkbox"
-                  checked={values.status}
-                  onChange={(e) =>
-                    setValues({ ...values, status: e.target.checked })
-                  }
+                  className="border border-slate-300 focus:border-blue-500 outline-none py-4 rounded-2xl px-4"
+                  type="file"
+                  name="images"
+                  onChange={(e) => setFieldValue("images", e.target.files?.[0] || null)}
                 />
-                Status
-              </label>
+              )}
 
-              <div className="flex justify-end gap-[10px] mt-[10px]">
+              <div className="flex gap-3 mt-2">
+                <button
+                  type="submit"
+                  className="bg-blue-600 hover:bg-blue-700 text-white py-3 px-5 rounded-2xl"
+                >
+                  {idx == null ? 'Save' : 'Update'}
+                </button>
+
                 <button
                   type="button"
                   onClick={() => {
@@ -170,16 +242,9 @@ const App = () => {
                     setidx(null)
                     resetForm()
                   }}
-                  className="bg-gray-400 text-white px-[16px] py-[8px] rounded-[10px]"
+                  className="bg-slate-200 hover:bg-slate-300 text-slate-800 py-3 px-5 rounded-2xl"
                 >
                   Cancel
-                </button>
-
-                <button
-                  type="submit"
-                  className="bg-slate-700 text-white px-[16px] py-[8px] rounded-[10px]"
-                >
-                  Save
                 </button>
               </div>
             </form>
@@ -188,21 +253,48 @@ const App = () => {
       )}
 
       {openInfo && info && (
-        <div className="fixed inset-0 bg-black/40 flex justify-center items-center">
-          <div className="w-[400px] bg-white rounded-[16px] p-[20px]">
-            <h2 className="text-[26px] font-bold mb-[20px]">User Info</h2>
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6">
+            <h2 className="text-2xl font-bold text-slate-800 mb-5">User Info</h2>
 
-            <div className="flex flex-col gap-[12px] text-[18px]">
-              <p><b>ID:</b> {info.id}</p>
-              <p><b>Name:</b> {info.name}</p>
-              <p><b>Age:</b> {info.age}</p>
-              <p><b>Status:</b> {info.status ? "Active" : "Inactive"}</p>
-            </div>
+            <div className="flex flex-col gap-4">
+              <div className="flex gap-3 items-center">
+                {info.images?.map((el: any) => {
+                  return (
+                    <img
+                      key={el.id}
+                      className="w-[60px] h-[60px] rounded-full object-cover border"
+                      src={`${img}/${el.imageName}`}
+                      alt=""
+                    />
+                  )
+                })}
+              </div>
 
-            <div className="flex justify-end mt-[20px]">
+              <p className="text-slate-700">
+                <span className="font-bold">ID:</span> {info.id}
+              </p>
+
+              <p className="text-slate-700">
+                <span className="font-bold">Name:</span> {info.name}
+              </p>
+
+              <p className="text-slate-700">
+                <span className="font-bold">Description:</span> {info.description}
+              </p>
+
+              <p className="text-slate-700">
+                <span className="font-bold">Status:</span>{" "}
+                {info.isCompleted ? 'ACTIVE' : 'INACTIVE'}
+              </p>
+
               <button
-                onClick={() => setopenInfo(false)}
-                className="bg-blue-500 text-white px-[16px] py-[8px] rounded-[10px]"
+                type="button"
+                onClick={() => {
+                  setopenInfo(false)
+                  setinfo(null)
+                }}
+                className="bg-slate-900 hover:bg-slate-800 text-white py-3 rounded-2xl mt-2"
               >
                 Close
               </button>
@@ -210,7 +302,7 @@ const App = () => {
           </div>
         </div>
       )}
-    </>
+    </div>
   )
 }
 

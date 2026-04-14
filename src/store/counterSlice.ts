@@ -1,47 +1,126 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import axios from "axios"
 
-export interface IUser {
-  id: number;
-  name: string;
-  age: number;
-  status: boolean;
+const chh="http://37.27.29.18:8001/completed"
+const url="http://37.27.29.18:8001/api/to-dos"
+ export const img="http://37.27.29.18:8001/images"
+export interface Ima {
+  id: number
+  imageName: string
 }
 
-interface IState {
-  data: IUser[];
+export interface Idata {
+  id: number
+  name: string
+  description: string
+  isCompleted: boolean
+  images: Ima[]
 }
 
-const initialState: IState = {
-  data: [
-    { id: 1, name: "Ali", age: 20, status: true },
-    { id: 2, name: "Vali", age: 23, status: false },
-    { id: 3, name: "Said", age: 19, status: true },
-  ],
-};
 
-const counterSlice = createSlice({
-  name: "todo",
-  initialState,
-  reducers: {
-    adduser: (state, action) => {
-      state.data.push(action.payload);
+export interface CounterState {
+    value: number,
+    data: Idata[],
+    error:boolean,
+    isloading:boolean
+}
+
+
+
+export const getdata=createAsyncThunk("todo/getdata",async ()=>{
+     try {
+        let {data}=await axios.get(url)
+        return data.data
+     } catch (error) {
+        console.error(error);
+     }
+})
+
+export const deleteuser=createAsyncThunk("todo/deleteuser",async(id,{dispatch})=>{
+    try {
+        await axios.delete(`${url}?id=${id}`)
+        dispatch(getdata())
+    } catch (error) {
+        console.error(error);
+    }
+})
+
+export const adduser=createAsyncThunk("todo/adduser",async(values,{dispatch})=>{
+    try {
+        await axios.post(url,values)
+        dispatch(getdata())
+    } catch (error) {
+        console.error(error);
+    }
+})
+
+export const edituser = createAsyncThunk(
+  "todo/edituser",
+  async (
+    values: { id: number; name: string; description: string },
+    { dispatch }
+  ) => {
+    try {
+      await axios.put(url, values)
+      dispatch(getdata())
+    } catch (error) {
+      console.error(error)
+    }
+  }
+)
+
+export const che = createAsyncThunk(
+  "todo/che",
+  async (e: Idata, { dispatch }) => {
+    try {
+      await axios.put(`${chh}?id=${e.id}`, {
+        ...e,
+        isCompleted: !e.isCompleted,
+      })
+      dispatch(getdata())
+    } catch (error) {
+      console.error(error)
+    }
+  }
+)
+
+
+const initialState: CounterState = {
+    value: 0,
+    data:[],
+    error:false,
+    isloading:true,
+}
+
+export const Todoslice = createSlice({
+    name: 'todo',
+    initialState,
+    reducers: {
+
+
+
     },
-    deleteuser: (state, action) => {
-      state.data = state.data.filter((e) => e.id !== action.payload);
-    },
-    chek: (state, action) => {
-      const user = state.data.find((e) => e.id === action.payload);
-      if (user) {
-        user.status = !user.status;
-      }
-    },
-    edituser: (state, action) => {
-      state.data = state.data.map((e) =>
-        e.id == action.payload.id ? action.payload : e
-      );
-    },
-  },
-});
+    extraReducers:(bulder)=>{
+   bulder.addCase(getdata.pending,(state,action)=>{
+    state.isloading=true
+    state.error=false
+   })
+   bulder.addCase(getdata.fulfilled,(state,action)=>{
+    state.data=action.payload
+    state.isloading=false
+    state.error=false
+   })
+   bulder.addCase(getdata.rejected,(state,action)=>{
+    state.isloading=false
+    state.error=true
+   })
+    }
+   
+      
+})
+
+// Action creators are generated for each case reducer function
+export const {} = Todoslice.actions
 
 export const { adduser, deleteuser, chek, edituser } = counterSlice.actions;
 export default counterSlice.reducer;
