@@ -122,4 +122,5 @@ export const Todoslice = createSlice({
 // Action creators are generated for each case reducer function
 export const {} = Todoslice.actions
 
-export default Todoslice.reducer
+export const { adduser, deleteuser, chek, edituser } = counterSlice.actions;
+export default counterSlice.reducer;
