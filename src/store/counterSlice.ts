@@ -1,21 +1,51 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '@reduxjs/toolkit'
 import axios from "axios"
+import { loadable } from "jotai/utils"
+import {atom} from "jotai"
 
-const chh="http://37.27.29.18:8001/completed"
-const url="http://37.27.29.18:8001/api/to-dos"
- export const img="http://37.27.29.18:8001/images"
-export interface Ima {
+
+export const url="http://37.27.29.18:8001/api/to-dos"
+export const img="http://37.27.29.18:8001/images"
+export interface IImage {
   id: number
   imageName: string
 }
 
 export interface Idata {
   id: number
+  isCompleted: boolean
   name: string
   description: string
-  isCompleted: boolean
-  images: Ima[]
+  images: IImage[]
 }
+export const cntatom=atom(0)
+
+export const getdata=atom(async (get,set)=>{
+    get(cntatom)
+    try {
+        let {data}=await axios.get(url)
+        return data.data
+    } catch (error) {
+        console.error(error);
+    }  
+})
+
+export const deleteuser=atom( null,async (get,set,id)=>{
+   try {
+    await axios.delete(`${url}?id=${id}`)
+    set(cntatom, get(cntatom) + 1)
+   } catch (error) {
+    console.error(error);
+   }
+})
+
+
+export const dataatom = loadable(getdata)
+
+
+
+
+
 
 
 export interface CounterState {
@@ -25,64 +55,6 @@ export interface CounterState {
     isloading:boolean
 }
 
-
-
-export const getdata=createAsyncThunk("todo/getdata",async ()=>{
-     try {
-        let {data}=await axios.get(url)
-        return data.data
-     } catch (error) {
-        console.error(error);
-     }
-})
-
-export const deleteuser=createAsyncThunk("todo/deleteuser",async(id,{dispatch})=>{
-    try {
-        await axios.delete(`${url}?id=${id}`)
-        dispatch(getdata())
-    } catch (error) {
-        console.error(error);
-    }
-})
-
-export const adduser=createAsyncThunk("todo/adduser",async(values,{dispatch})=>{
-    try {
-        await axios.post(url,values)
-        dispatch(getdata())
-    } catch (error) {
-        console.error(error);
-    }
-})
-
-export const edituser = createAsyncThunk(
-  "todo/edituser",
-  async (
-    values: { id: number; name: string; description: string },
-    { dispatch }
-  ) => {
-    try {
-      await axios.put(url, values)
-      dispatch(getdata())
-    } catch (error) {
-      console.error(error)
-    }
-  }
-)
-
-export const che = createAsyncThunk(
-  "todo/che",
-  async (e: Idata, { dispatch }) => {
-    try {
-      await axios.put(`${chh}?id=${e.id}`, {
-        ...e,
-        isCompleted: !e.isCompleted,
-      })
-      dispatch(getdata())
-    } catch (error) {
-      console.error(error)
-    }
-  }
-)
 
 
 const initialState: CounterState = {
