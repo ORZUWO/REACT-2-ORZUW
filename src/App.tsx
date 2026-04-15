@@ -2,7 +2,23 @@ import React from 'react'
 import { useAtom, useAtomValue } from 'jotai'
 import { dataatom,  deleteuser, img } from './store/counterSlice'
 
+  const [idx, setidx] = useState<number | null>(null)
+  const [open, setopen] = useState(false)
+  const [openInfo, setopenInfo] = useState(false)
+  const [info, setinfo] = useState<any>(null)
 
+  const { handleChange, handleSubmit, values, setValues, resetForm, setFieldValue } = useFormik({
+    initialValues: {
+      name: '',
+      description: '',
+      isCompleted: true,
+      images: null as File | null
+    },
+    onSubmit: (values) => {
+      let formdata = new FormData()
+      formdata.append("name", values.name)
+      formdata.append("description", values.description)
+      formdata.append("isCompleted", String(values.isCompleted))
 
 const App = () => {
   const data = useAtomValue(dataatom)

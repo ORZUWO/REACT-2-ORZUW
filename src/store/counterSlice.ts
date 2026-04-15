@@ -47,35 +47,52 @@ export const dataatom = loadable(getdata)
 
 
 
+
 export interface CounterState {
     value: number,
-    data: Idata[]
+    data: Idata[],
+    error:boolean,
+    isloading:boolean
 }
 
 
 
 const initialState: CounterState = {
     value: 0,
-    data: [{ id: 1, name: "Ali", age: 20, status: true },
-    { id: 2, name: "Vali", age: 22, status: false },
-    { id: 3, name: "Said", age: 19, status: true },
-    { id: 4, name: "Jamshed", age: 25, status: false },
-    { id: 5, name: "Farhod", age: 21, status: true },
-    { id: 6, name: "Rustam", age: 23, status: false },
-    { id: 7, name: "Dilshod", age: 24, status: true },
-    ]
-
+    data:[],
+    error:false,
+    isloading:true,
 }
 
 export const Todoslice = createSlice({
     name: 'todo',
     initialState,
     reducers: {
-      
+
+
+
     },
+    extraReducers:(bulder)=>{
+   bulder.addCase(getdata.pending,(state,action)=>{
+    state.isloading=true
+    state.error=false
+   })
+   bulder.addCase(getdata.fulfilled,(state,action)=>{
+    state.data=action.payload
+    state.isloading=false
+    state.error=false
+   })
+   bulder.addCase(getdata.rejected,(state,action)=>{
+    state.isloading=false
+    state.error=true
+   })
+    }
+   
+      
 })
 
 // Action creators are generated for each case reducer function
-export const { } = Todoslice.actions
+export const {} = Todoslice.actions
 
-export default Todoslice.reducer
+export const { adduser, deleteuser, chek, edituser } = counterSlice.actions;
+export default counterSlice.reducer;
