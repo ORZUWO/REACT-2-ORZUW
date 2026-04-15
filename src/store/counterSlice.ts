@@ -1,41 +1,54 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { atom } from "jotai"
+import axios from "axios"
+import { loadable } from "jotai/utils"
 
-
+export interface IImage {
+  id: number
+  imageName: string
+}
 
 export interface Idata {
-    id: number,
-    status: boolean,
-    name: string,
-    age: number
+  id: number
+  isCompleted: boolean
+  name: string
+  description: string
+  images: IImage[]
 }
 
 export interface CounterState {
-    value: number,
-    data: Idata[]
+  value: number
+  data: Idata[]
 }
 
-const initialState: CounterState = {
-    value: 0,
-    data: [{ id: 1, name: "Ali", age: 20, status: true },
-    { id: 2, name: "Vali", age: 22, status: false },
-    { id: 3, name: "Said", age: 19, status: true },
-    { id: 4, name: "Jamshed", age: 25, status: false },
-    { id: 5, name: "Farhod", age: 21, status: true },
-    { id: 6, name: "Rustam", age: 23, status: false },
-    { id: 7, name: "Dilshod", age: 24, status: true },
-    ]
+export const url = "http://37.27.29.18:8001/api/to-dos"
+export const img = "http://37.27.29.18:8001/images"
 
+const cnt = atom(0)
+
+export const getdata = atom(async (get) => {
+  get(cnt)
+  try {
+    const { data } = await axios.get(url)
+    return data.data as Idata[]
+  } catch (error) {
+    console.error(error)
+    return []
+  }
+})
+
+export const datauser = loadable(getdata)
+
+const initialState: CounterState = {
+  value: 0,
+  data: []
 }
 
 export const Todoslice = createSlice({
-    name: 'todo',
-    initialState,
-    reducers: {
-      
-    },
+  name: 'todo',
+  initialState,
+  reducers: {}
 })
 
-// Action creators are generated for each case reducer function
-export const { } = Todoslice.actions
-
+export const {} = Todoslice.actions
 export default Todoslice.reducer
