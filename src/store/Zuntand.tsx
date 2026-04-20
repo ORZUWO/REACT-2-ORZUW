@@ -70,7 +70,6 @@ export const Zustandlogic = create((set, get: any) => ({
       const res = await AxiosRequest.get("/Cart/get-products-from-cart")
 
       console.log("CART DATA:", res.data)
-cd
       set({
         cart:
           res.data?.data?.[0]?.productsInCart ||
