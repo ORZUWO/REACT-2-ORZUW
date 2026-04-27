@@ -7,39 +7,35 @@ import delivery from "../images/delivery.svg"
 import service from "../images/service.svg"
 import money from "../images/money.svg"
 import { useNavigate } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 
 const About = () => {
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   return (
     <>
       <div className="pt-10 pb-20">
         <div className="flex items-center gap-3 text-[14px] text-[#7D8184] mb-16">
           <p onClick={() => navigate("/")} className="cursor-pointer">
-            Home
+            {t("about.breadcrumb.home")}
           </p>
           <p>/</p>
-          <p className="text-black">About</p>
+          <p className="text-black">{t("about.breadcrumb.about")}</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-24">
           <div>
             <h1 className="text-[36px] md:text-[54px] font-[600] tracking-[0.06em] mb-10">
-              Our Story
+              {t("about.story.title")}
             </h1>
 
             <p className="text-[16px] leading-[28px] text-black mb-6 max-w-[600px]">
-              Launced in 2015, Exclusive is South Asia’s premier online shopping
-              marketplace with an active presense in Bangladesh. Supported by
-              wide range of tailored marketing, data and service solutions,
-              Exclusive has 10,500 sallers and 300 brands and serves 3 millions
-              customers across the region.
+              {t("about.story.desc1")}
             </p>
 
             <p className="text-[16px] leading-[28px] text-black max-w-[600px]">
-              Exclusive has more than 1 Million products to offer, growing at a
-              very fast. Exclusive offers a diverse assortment in categories
-              ranging from consumer.
+              {t("about.story.desc2")}
             </p>
           </div>
 
@@ -62,7 +58,7 @@ const About = () => {
               </div>
             </div>
             <h2 className="text-[32px] font-[700] mb-2">10.5k</h2>
-            <p className="text-[16px]">Sellers active our site</p>
+            <p className="text-[16px]">{t("about.stats.sellers")}</p>
           </div>
 
           <div className="h-[230px] bg-[#DB4444] rounded-[4px] flex flex-col items-center justify-center text-center text-white shadow-md">
@@ -74,7 +70,7 @@ const About = () => {
               </div>
             </div>
             <h2 className="text-[32px] font-[700] mb-2">33k</h2>
-            <p className="text-[16px]">Monthly Product Sale</p>
+            <p className="text-[16px]">{t("about.stats.sales")}</p>
           </div>
 
           <div className="h-[230px] border border-[#B3B3B3] rounded-[4px] flex flex-col items-center justify-center text-center">
@@ -86,7 +82,7 @@ const About = () => {
               </div>
             </div>
             <h2 className="text-[32px] font-[700] mb-2">45.5k</h2>
-            <p className="text-[16px]">Customer active in our site</p>
+            <p className="text-[16px]">{t("about.stats.customers")}</p>
           </div>
 
           <div className="h-[230px] border border-[#B3B3B3] rounded-[4px] flex flex-col items-center justify-center text-center">
@@ -98,7 +94,7 @@ const About = () => {
               </div>
             </div>
             <h2 className="text-[32px] font-[700] mb-2">25k</h2>
-            <p className="text-[16px]">Anual gross sale in our site</p>
+            <p className="text-[16px]">{t("about.stats.annual")}</p>
           </div>
         </div>
 
@@ -108,7 +104,7 @@ const About = () => {
               <img src={tom} alt="" className="max-w-full max-h-full object-contain" />
             </div>
             <h2 className="text-[32px] font-[500] mb-2">Tom Cruise</h2>
-            <p className="text-[16px] mb-4">Founder & Chairman</p>
+            <p className="text-[16px] mb-4">{t("about.team.tom")}</p>
             <div className="flex items-center gap-4 text-[22px]">
               <span>𝕏</span>
               <span>◎</span>
@@ -121,7 +117,7 @@ const About = () => {
               <img src={emma} alt="" className="max-w-full max-h-full object-contain" />
             </div>
             <h2 className="text-[32px] font-[500] mb-2">Emma Watson</h2>
-            <p className="text-[16px] mb-4">Managing Director</p>
+            <p className="text-[16px] mb-4">{t("about.team.emma")}</p>
             <div className="flex items-center gap-4 text-[22px]">
               <span>𝕏</span>
               <span>◎</span>
@@ -134,7 +130,7 @@ const About = () => {
               <img src={will} alt="" className="max-w-full max-h-full object-contain" />
             </div>
             <h2 className="text-[32px] font-[500] mb-2">Will Smith</h2>
-            <p className="text-[16px] mb-4">Product Designer</p>
+            <p className="text-[16px] mb-4">{t("about.team.will")}</p>
             <div className="flex items-center gap-4 text-[22px]">
               <span>𝕏</span>
               <span>◎</span>
@@ -159,10 +155,10 @@ const About = () => {
               </div>
             </div>
             <h4 className="text-[20px] font-[600] leading-[28px] text-black mb-2">
-              FREE AND FAST DELIVERY
+              {t("services.delivery.title")}
             </h4>
             <p className="text-[14px] font-[400] leading-[21px] text-black">
-              Free delivery for all orders over $140
+              {t("services.delivery.desc")}
             </p>
           </div>
 
@@ -173,10 +169,10 @@ const About = () => {
               </div>
             </div>
             <h4 className="text-[20px] font-[600] leading-[28px] text-black mb-2">
-              24/7 CUSTOMER SERVICE
+              {t("services.customerService.title")}
             </h4>
             <p className="text-[14px] font-[400] leading-[21px] text-black">
-              Friendly 24/7 customer support
+              {t("services.customerService.desc")}
             </p>
           </div>
 
@@ -187,10 +183,10 @@ const About = () => {
               </div>
             </div>
             <h4 className="text-[20px] font-[600] leading-[28px] text-black mb-2">
-              MONEY BACK GUARANTEE
+              {t("services.guarantee.title")}
             </h4>
             <p className="text-[14px] font-[400] leading-[21px] text-black">
-              We reurn money within 30 days
+              {t("services.guarantee.desc")}
             </p>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { create } from "zustand"
-import { AxiosRequest } from "../utils/token"
+import { AxiosRequest, GetToken, RemoveToken, SaveToken } from "../utils/token"
 
 export const Zustandlogic = create((set, get: any) => ({
   data: [],
@@ -9,13 +9,86 @@ export const Zustandlogic = create((set, get: any) => ({
   loading: false,
   loadingCategory: false,
   loadingCart: false,
+  loadingAuth: false,
+  loadingRegister: false,
 
   error: null,
   errorCategory: null,
   errorCart: null,
+  errorAuth: "",
+  errorRegister: "",
 
   loadingCartId: null,
   cartMessage: "",
+  isAuth: !!GetToken(),
+
+  registerUser: async (obj: any) => {
+    set({
+      loadingRegister: true,
+      errorRegister: "",
+    })
+
+    try {
+      await AxiosRequest.post("/Account/register", obj)
+
+      set({
+        loadingRegister: false,
+        errorRegister: "",
+      })
+
+      return true
+    } catch (error: any) {
+      set({
+        loadingRegister: false,
+        errorRegister: error.response?.data?.errors?.[0] || "Ошибка регистрации",
+      })
+
+      return false
+    }
+  },
+
+  loginUser: async (obj: { userName: string; password: string }) => {
+    set({
+      loadingAuth: true,
+      errorAuth: "",
+    })
+
+    try {
+      const { data } = await AxiosRequest.post("/Account/login", obj)
+
+      SaveToken(data.data)
+      localStorage.setItem("userName", obj.userName)
+
+      set({
+        loadingAuth: false,
+        errorAuth: "",
+        isAuth: true,
+      })
+
+      window.dispatchEvent(new Event("authUpdated"))
+
+      return true
+    } catch (error: any) {
+      set({
+        loadingAuth: false,
+        errorAuth: error.response?.data?.errors?.[0] || "Неправильный логин или пароль.",
+        isAuth: false,
+      })
+
+      return false
+    }
+  },
+
+  logoutUser: () => {
+    RemoveToken()
+    localStorage.removeItem("userName")
+
+    set({
+      isAuth: false,
+    })
+
+    window.dispatchEvent(new Event("authUpdated"))
+  },
 
   getData: async () => {
     set({ loading: true, error: null })
@@ -28,10 +101,7 @@ export const Zustandlogic = create((set, get: any) => ({
         loading: false,
         error: null,
       })
-    } catch (error: any) {
-      console.log("GET PRODUCTS ERROR:", error.response?.status)
-      console.log("GET PRODUCTS DATA:", error.response?.data)
-
+    } catch {
       set({
         data: [],
         loading: false,
@@ -51,10 +121,7 @@ export const Zustandlogic = create((set, get: any) => ({
         loadingCategory: false,
         errorCategory: null,
       })
-    } catch (error: any) {
-      console.log("GET CATEGORY ERROR:", error.response?.status)
-      console.log("GET CATEGORY DATA:", error.response?.data)
-
+    } catch {
       set({
         category: [],
         loadingCategory: false,
@@ -69,7 +136,6 @@ export const Zustandlogic = create((set, get: any) => ({
     try {
       const res = await AxiosRequest.get("/Cart/get-products-from-cart")
 
-      console.log("CART DATA:", res.data)
       set({
         cart:
           res.data?.data?.[0]?.productsInCart ||
@@ -79,10 +145,7 @@ export const Zustandlogic = create((set, get: any) => ({
         loadingCart: false,
         errorCart: null,
       })
-    } catch (error: any) {
-      console.log("GET CART ERROR:", error.response?.status)
-      console.log("GET CART DATA:", error.response?.data)
-
+    } catch {
       set({
         cart: [],
         loadingCart: false,
@@ -98,20 +161,16 @@ export const Zustandlogic = create((set, get: any) => ({
     })
 
     try {
-      console.log("ADD TO CART ID:", id)
-
       await AxiosRequest.post(`/Cart/add-product-to-cart?id=${id}`)
-
       await get().getCart()
 
       set({
         loadingCartId: null,
         cartMessage: "success",
       })
-    } catch (error: any) {
-      console.log("ADD CART ERROR:", error.response?.status)
-      console.log("ADD CART DATA:", error.response?.data)
 
+      window.dispatchEvent(new Event("cartUpdated"))
+    } catch {
       set({
         loadingCartId: null,
         cartMessage: "error",

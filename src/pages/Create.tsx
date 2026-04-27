@@ -19,7 +19,7 @@ const Create = () => {
     const password = form.get("password")
     const confirmPassword = form.get("confirmPassword")
 
-    if (password !== confirmPassword) {
+    if (password !=confirmPassword) {
       setloading(false)
       seterror("Пароли не одинаковые")
       return
