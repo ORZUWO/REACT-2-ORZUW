@@ -1,73 +1,52 @@
-# React + TypeScript + Vite
+# AI-JOB Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Modern React application built with the latest stack.
 
-Currently, two official plugins are available:
+## Tech Stack
+- **React 19**
+- **Vite 6**
+- **Zustand 5** (State Management)
+- **Axios 1.15** (API Client)
+- **React Router 7**
+- **Tailwind CSS 4**
+- **Framer Motion 12** (Animations)
+- **React Hook Form** + **Zod** (Forms & Validation)
+- **Sonner** (Notifications)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Architecture
+```text
+src/
+├── pages/             # Page components (logic in hooks)
+├── components/
+│   ├── auth/          # Auth guards
+│   ├── layout/        # Shared layouts (Navbar, Footer)
+│   └── ui/            # Base UI components (shadcn)
+├── store/             # Zustand stores
+├── hooks/             # Custom hooks (API requests)
+├── lib/               # Utilities & Instance configs (Axios)
+├── router/            # Route configurations
+└── i18n/              # Localization (TJ / EN)
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Getting Started
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 1. Environment Variables
+Create a `.env` file in the root directory:
+```env
+VITE_API_URL=https://api.yourdomain.com
 ```
+
+### 2. Install Dependencies
+```bash
+npm install
+```
+
+### 3. Run Development Server
+```bash
+npm run dev
+```
+
+## Features
+- **Modern Auth Flow**: Zustand-based auth state with Axios interceptors for automatic token management and refresh.
+- **Beautiful UI**: High-end designs using Tailwind 4 and Framer Motion.
+- **Type Safety**: Full TypeScript integration with Zod validation.

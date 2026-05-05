@@ -1,44 +1,15 @@
-import React, { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import {type RootState } from './store/store'
-import { useFormik } from 'formik';
+import React from "react";
+import { RouterProvider } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
+import { router } from "./router";
 
-const App = () => {
-  const {data}=useSelector((store:RootState)=>store.todo)
-  const Dispatch=useDispatch()
-  const [idx,setidx]=useState(null)
-
-
-
-const {handleChange,handleSubmit,values,setValues,resetForm} = useFormik({
-     initialValues: {
-       name:"",
-       age:0,
-       status:true,
-       id:Date.now()
-     },
-     onSubmit: values=> {
-       if(idx==null){
-        
-       }
-       else{
-
-       }
-     },
-   });
-
-
+const App: React.FC = () => {
   return (
     <>
-
-
-
-
-
-
-
+      <Toaster position="top-right" reverseOrder={false} />
+      <RouterProvider router={router} />
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;
